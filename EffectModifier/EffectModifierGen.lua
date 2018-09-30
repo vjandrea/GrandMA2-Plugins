@@ -20,7 +20,7 @@ function start()
     
     local i_effectitem = 1;
     local i_effectitemcount = 4;
-    local i_effectlines = 4;
+    local i_effectlines = 2;
     
     local b_groups = 1;
     local i_groupscount = 4;
@@ -54,9 +54,20 @@ function start()
             end
             
             if i > 0 then
+                -- Assing Effect 1.1 /wings=2; Assing Effect 1.2 /wings=-2
                 if b_wingsWithSym == 1 then
-                    gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..(i+1)..'\" ;');
-                    gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+2)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..-(i+1)..'\" ;');
+                    local s_cmdline = '';                    
+                    for c = 0, i_effectitemcount do --one iteration for each effect item
+                        for j = 0, i_effectlines do -- one iteration for each effect item line
+                            if j % 2 == 1 then -- with minus or without
+                                s_cmdline = s_cmdline..'Assign Effect '..(i_effectitem+c)..'.'..(j+1)..' /wings='..(i+1)..';';
+                            else
+                                s_cmdline = s_cmdline..'Assign Effect '..(i_effectitem+c)..'.'..(j+1)..' /wings='..-(i+1)..';';
+                            end
+                        end
+                    end
+                    
+                    gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i)..' /cmd= \"'..s_cmdline..'\" ;');
                 else
                     gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..(i+1)..'\" ;');
                 end
