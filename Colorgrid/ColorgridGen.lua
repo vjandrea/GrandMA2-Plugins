@@ -1,10 +1,14 @@
 -- Colorpicker
 -- created by: Leo Kuenne
--- Version: 0.4
+-- Version: 0.5
 -- State: Alpha
+-- Desc:
+-- This Plugin generates a interactive Colorgrid for LayoutViews.
 
-local universalcolorpresets = 1000;
-local globalcolorpresets = 1020;
+-- Changelog from version 0.4 to 0.5:
+-- Removed: generating universal color presets
+
+local globalcolorpresets = 1;
 local startmacro_num = 1000;
 local startseq_num = 1000;
 local startexec_page = 4;
@@ -75,7 +79,7 @@ function start()
     
     getAllVarsFromShowfile();
     
-    local start = gma.gui.confirm('Colorpicker! Row Count:'..row_count, 'Attention! Programmer will be cleared! Do you want to continue?');
+    local start = gma.gui.confirm('Colorpicker | Row Count:'..row_count, 'Attention! Programmer will be cleared! Do you want to continue?');
     if (not start) then
         goto EOF
     end
@@ -98,14 +102,6 @@ function start()
         goto EOF
     end
 
-    --Store Global Presets for the Fixturegroup
-    gma.cmd('ClearAll');
-    gma.cmd('Group '..fixt_group..'; On PresetType 4;');
-    for j = 0, 12 do
-       gma.cmd('At Preset 4.'..universalcolorpresets+j..'; Store Preset 4.'..globalcolorpresets+j..' /m /g');
-    end
-    gma.cmd('ClearAll');
-    
     
     --Build command to Off all Executors form start to End
     local allcolorexec_offcmd = 'Off Executor '..startexec_page..'.'..startexec_num..' Thru '..startexec_page..'.'..(startexec_num+12)..'';
