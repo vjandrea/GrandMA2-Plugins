@@ -8,6 +8,9 @@
 -- The type of sequence is defined by the variables at the top of the script.
 
 
+-- ToDo:
+-- Instead of counts, define the items to modify the effects in string arrays
+
 local getHandle = gma.show.getobj.handle
 
 function getLabel(str)
@@ -32,27 +35,28 @@ function start()
     local i_wingscount = 4; --From 2 on! Cue 1 is None, Cue 2 is 2, Cue 3 is 3
     local b_wingsWithSym = 1;
     
-    local b_width = 1;
+    local b_phase = 1;
+    local i_phasecount = 4;
     local b_dir = 1;
     
     if b_groups == 1 then
         for i = 0, i_groupscount do
-            gma.cmd('Store Seq '..i_startseq..' Cue '..(i+1)..'; Assign Seq '..i_startseq..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /groups='..i..'\" ;');
-            gma.cmd('Assign Seq '..i_startseq..' /name=\"Groups";');
+            gma.cmd('Store Seq '..i_startseq..' Cue '..(i+1)..'; Assign Seq '..i_startseq..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /groups='..i..'\" ;');
         end
+        gma.cmd('Assign Seq '..i_startseq..' /name=\"Groups";');
     end
     
     if b_blocks == 1 then
         for i = 0, i_blockscount do
-            gma.cmd('Store Seq '..(i_startseq+1)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+1)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /blocks='..i..'\" ;');
-            gma.cmd('Assign Seq '..(i_startseq+1)..' /name=\"Blocks";');
+            gma.cmd('Store Seq '..(i_startseq+1)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+1)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /blocks='..i..'\" ;');
         end
+        gma.cmd('Assign Seq '..(i_startseq+1)..' /name=\"Blocks";');
     end
     
     if b_wings == 1 then
         for i = 0, i_wingscount do
             if i == 0 then
-                gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..i..'\" ;');
+                gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /wings='..i..'\" ;');
             end
             
             if i > 0 then
@@ -70,12 +74,20 @@ function start()
                     
                     gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"'..s_cmdline..'\" ;');
                 else
-                    gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..(i+1)..'\" ;');
+                    gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /wings='..(i+1)..'\" ;');
                 end
             end
             
         end
         gma.cmd('Assign Seq '..(i_startseq+2)..' /name=\"Wings";');
+    end
+    
+    if b_phase == 1 then
+        for i = 0, i_phasecount do
+            local cmdline = ({[0] = '0..0', [1] = '0..90', [2] = '0..180', [3] = '0..270', [4] = '0..360'})[i];
+            gma.cmd('Store Seq '..(i_startseq+3)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+3)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /phase='..cmdline..'\" ;');
+        end
+        gma.cmd('Assign Seq '..(i_startseq+3)..' /name=\"Phase";');
     end
     
 end
