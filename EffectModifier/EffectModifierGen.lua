@@ -37,37 +37,36 @@ function start()
     
     if b_groups == 1 then
         for i = 0, i_groupscount do
-            gma.cmd('Store Seq '..i_startseq..' Cue '..(i+1)..'; Assign Seq '..i_startseq..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /groups='..i..'\" ;');
+            gma.cmd('Store Seq '..i_startseq..' Cue '..(i+1)..'; Assign Seq '..i_startseq..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /groups='..i..'\" ;');
         end
     end
     
     if b_blocks == 1 then
         for i = 0, i_blockscount do
-            gma.cmd('Store Seq '..(i_startseq+1)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+1)..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /blocks='..i..'\" ;');
+            gma.cmd('Store Seq '..(i_startseq+1)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+1)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /blocks='..i..'\" ;');
         end
     end
     
     if b_wings == 1 then
         for i = 0, i_wingscount do
             if i == 0 then
-                gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..i..'\" ;');
+                gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..i..'\" ;');
             end
             
             if i > 0 then
-                -- Assing Effect 1.1 /wings=2; Assing Effect 1.2 /wings=-2
                 if b_wingsWithSym == 1 then
                     local s_cmdline = '';                    
-                    for c = 0, i_effectitemcount do --one iteration for each effect item
-                        for j = 0, i_effectlines do -- one iteration for each effect item line
-                            if j % 2 == 1 then -- with minus or without
-                                s_cmdline = s_cmdline..'Assign Effect '..(i_effectitem+c)..'.'..(j+1)..' /wings='..(i+1)..';';
+                    for c = 0, (i_effectitemcount-1) do
+                        for j = 1, (i_effectlines) do
+                            if j % 2 == 0 then
+                                s_cmdline = s_cmdline..'Assign Effect 1.'..(i_effectitem+c)..'.'..(j)..' /wings='..(i+1)..'; ';
                             else
-                                s_cmdline = s_cmdline..'Assign Effect '..(i_effectitem+c)..'.'..(j+1)..' /wings='..-(i+1)..';';
+                                s_cmdline = s_cmdline..'Assign Effect 1.'..(i_effectitem+c)..'.'..(j)..' /wings='..-(i+1)..'; ';
                             end
                         end
                     end
                     
-                    gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i)..' /cmd= \"'..s_cmdline..'\" ;');
+                    gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"'..s_cmdline..'\" ;');
                 else
                     gma.cmd('Store Seq '..(i_startseq+2)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+2)..' Cue '..(i+1)..' /cmd= \"Assign Effect '..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /wings='..(i+1)..'\" ;');
                 end
