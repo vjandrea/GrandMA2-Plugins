@@ -96,7 +96,8 @@ function start()
     if b_phase == 1 then
         for i = 0, (i_phasecount-1) do
             local cmdline = ({[0] = '0..0', [1] = '0..90', [2] = '0..180', [3] = '0..270', [4] = '0..360'})[i];
-            gma.cmd('Store Seq '..(i_startseq+3)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+3)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /phase='..cmdline..'\" ;');
+            gma.cmd('Store Seq '..(i_startseq+3)..' Cue '..(i+1)..'; ');
+            gma.cmd('Assign Seq '..(i_startseq+3)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /phase='..cmdline..'\" ;');
             gma.cmd('Assign Seq '..(i_startseq+3)..' Cue '..(i+1)..' /name= \"'..cmdline..'\" ;');
         end
         gma.cmd('Assign Seq '..(i_startseq+3)..' /name=\"Phase";');
@@ -105,7 +106,8 @@ function start()
     if b_dir == 1 then
         for i = 0, (i_dircount-1) do
             local cmdline = ({[0] = '>', [1] = '<', [2] = '>bounce', [3] = '<bounce'})[i];
-            gma.cmd('Store Seq '..(i_startseq+4)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+4)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /dir='..cmdline..'\" ;');
+            gma.cmd('Store Seq '..(i_startseq+4)..' Cue '..(i+1)..'; ');
+            gma.cmd('Assign Seq '..(i_startseq+4)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /dir='..cmdline..'\" ;');
             gma.cmd('Assign Seq '..(i_startseq+4)..' Cue '..(i+1)..' /name= \"'..cmdline..'\" ;');
         end
         gma.cmd('Assign Seq '..(i_startseq+4)..' /name=\"Dir";');
