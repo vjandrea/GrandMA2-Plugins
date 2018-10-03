@@ -5,8 +5,8 @@
 -- Desc:
 -- This Plugin generates a interactive Colorgrid for LayoutViews.
 
--- Changelog from version 0.4 to 0.5:
--- Removed: generating universal color presets
+-- ToDo:
+-- Add an option to disable the Imagepart, so that the pure ExecButton Page can be used
 
 local globalcolorpresets = 1;
 local startmacro_num = 1000;
