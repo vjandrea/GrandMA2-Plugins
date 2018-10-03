@@ -1,10 +1,10 @@
 -- Effect Modifier
 -- created by: Leo Kuenne
--- Version: 1
+-- Version: 0.5
 -- State: Alpha
 -- Desc:
 -- This plugin generates Sequences that modify specific effects in the effect pool.
--- They hold commands which assign different groups, blocks, widths and wings to the effect.
+-- They hold commands which assign different groups, blocks, phase, direction and wings to the effect.
 -- The type of sequence is defined by the variables at the top of the script.
 
 
@@ -38,12 +38,14 @@ function start()
     if b_groups == 1 then
         for i = 0, i_groupscount do
             gma.cmd('Store Seq '..i_startseq..' Cue '..(i+1)..'; Assign Seq '..i_startseq..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /groups='..i..'\" ;');
+            gma.cmd('Assign Seq '..i_startseq..' /name=\"Groups";');
         end
     end
     
     if b_blocks == 1 then
         for i = 0, i_blockscount do
             gma.cmd('Store Seq '..(i_startseq+1)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+1)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru '..i_effectitem + i_effectitemcount..' /blocks='..i..'\" ;');
+            gma.cmd('Assign Seq '..(i_startseq+1)..' /name=\"Blocks";');
         end
     end
     
@@ -73,6 +75,7 @@ function start()
             end
             
         end
+        gma.cmd('Assign Seq '..(i_startseq+2)..' /name=\"Wings";');
     end
     
 end
