@@ -36,8 +36,9 @@ function start()
     local b_wingsWithSym = 1;
     
     local b_phase = 1;
-    local i_phasecount = 4;
+    local i_phasecount = 5;
     local b_dir = 1;
+    local i_dircount = 4;
     
     if b_groups == 1 then
         for i = 0, i_groupscount do
@@ -83,11 +84,19 @@ function start()
     end
     
     if b_phase == 1 then
-        for i = 0, i_phasecount do
+        for i = 0, (i_phasecount-1) do
             local cmdline = ({[0] = '0..0', [1] = '0..90', [2] = '0..180', [3] = '0..270', [4] = '0..360'})[i];
             gma.cmd('Store Seq '..(i_startseq+3)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+3)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /phase='..cmdline..'\" ;');
         end
         gma.cmd('Assign Seq '..(i_startseq+3)..' /name=\"Phase";');
+    end
+    
+    if b_dir == 1 then
+        for i = 0, (i_dircount-1) do
+            local cmdline = ({[0] = '>', [1] = '<', [2] = '>bounce', [3] = '<bounce'})[i];
+            gma.cmd('Store Seq '..(i_startseq+4)..' Cue '..(i+1)..'; Assign Seq '..(i_startseq+4)..' Cue '..(i+1)..' /cmd= \"Assign Effect 1.'..i_effectitem..' Thru 1.'..i_effectitem + i_effectitemcount..' /dir='..cmdline..'\" ;');
+        end
+        gma.cmd('Assign Seq '..(i_startseq+4)..' /name=\"Dir";');
     end
     
 end
