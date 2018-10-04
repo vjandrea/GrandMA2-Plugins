@@ -12,6 +12,8 @@
 -- Instead of counts, define the items to modify the effects in string arrays
 -- Generate Macros for the Wings Modifier. There is a limited char count in the cmdline of the cue.
 
+-- Test
+
 local getHandle = gma.show.getobj.handle
 
 function getLabel(str)
