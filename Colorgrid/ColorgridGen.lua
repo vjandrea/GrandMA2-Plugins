@@ -1,27 +1,17 @@
 -- Colorpicker
 -- created by: Leo Kuenne
--- Version: 0.5
--- State: Alpha
+-- Version: 1
+-- State: Beta
 -- Desc:
--- This Plugin generates a interactive Colorgrid for LayoutViews.
+-- This Plugin generates a interactive Colorgrid.
 
 -- ToDo:
 -- Add an option to disable the Imagepart, so that the pure ExecButton Page can be used
 
 local globalcolorpresets = 1;
-local startmacro_num = 1000;
 local startseq_num = 1000;
 local startexec_page = 4;
 local startexec_num = 101;
-local startimagestorage_num = 1000;
-local startimage_num = 1030;
-local layoutview_num = 10;
-local layoutview_pos_startX = 0;
-local layoutview_pos_startY = 0;
-local layoutview_pos_spacingX = 0.25;
-local layoutview_pos_spacingY = 0.25;
-local resetmacro_num = 999;
-local resetmacro_lines = 0;
 local colornames = {'White', 'Red', 'Orange', 'Yellow', 'Fern Green', 'Green', 'Sea Green', 'Cyan', 'Lavender', 'Blue', 'Violet', 'Magenta', 'Pink'};
 local colornames_prgm = {'white', 'red', 'orange', 'yellow', 'ferngreen', 'green', 'seaGreen', 'cyan', 'lavender', 'blue', 'violet', 'magenta', 'pink'};
 
@@ -48,14 +38,6 @@ function getAllVarsFromShowfile()
             allcolorexec_cmd[j+1] = gma.show.getvar('allcolorexec_cmd_'..colornames_prgm[j+1]);
         end
     end
-    
-    --All Color Macro Commands
-    for j = 0, 12 do
-        if gma.show.getvar('allcolormac_cmd_'..colornames_prgm[j+1]) ~= nil then
-            gma.echo('Found allcolormac_cmd_'..colornames_prgm[j+1]);
-            allcolormac_cmd[j+1] = gma.show.getvar('allcolormac_cmd_'..colornames_prgm[j+1]);
-        end
-    end
 
 end
 
@@ -67,12 +49,7 @@ function setAllVarsFromShowfile()
     for j = 0,12 do
         gma.show.setvar('allcolorexec_cmd_'..colornames_prgm[j+1], allcolorexec_cmd[j+1]);
     end
-    
-    for j = 0,12 do
-        gma.show.setvar('allcolormac_cmd_'..colornames_prgm[j+1], allcolormac_cmd[j+1]);
-    end
-    
-    
+   
 end
 
 function start()
@@ -90,8 +67,6 @@ function start()
     
     local exec_num = startexec_num + 15 + (15 * row_count);
     local seq_num = startseq_num + 15 + (15 * row_count);
-    local mac_num = startmacro_num + 15 + (15 * row_count);
-    local image_num = startimage_num + 15 + (15 * row_count);
     
     local fixt_group = gma.textinput('Which Fixture Group?', 'Tile');
     if (not fixt_group) then
@@ -110,27 +85,21 @@ function start()
     --If there are no Executors for All Fixtures yet, then create ones
     if gma.show.getobj.handle("Sequence 1000") == nil then
     
-        callback_progress_All = gma.gui.progress.start("All Row");
-        gma.gui.progress.setrange(callback_progress_All,1,400);
-        gma.gui.progress.set(callback_progress_All,progress);
+        -- callback_progress_All = gma.gui.progress.start("All Row");
+        -- gma.gui.progress.setrange(callback_progress_All,1,400);
+        -- gma.gui.progress.set(callback_progress_All,progress);
         
-        --Create Reset Macro
-        gma.cmd('Store Macro '..resetmacro_num..';');
         
         --Create Vars
         for j = 0, 12 do
             gma.cmd('SetVar $colorgrid_All_'..colornames_prgm[j+1]..' = 0');
             
-            progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
+            -- progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
         end
-        
-        --Create LayoutView
-        gma.cmd('Store  Layout '..layoutview_num);
-        gma.cmd('Layout '..layoutview_num);
         
         --Create Sequences and Execs for All Colors
         for j = 0, 12 do
-            progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
+            -- progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
             
             -- Store Seq and assign it to Executor
             gma.cmd('ClearAll'); 
@@ -143,71 +112,21 @@ function start()
             --Assign command to Cue
             gma.cmd('Assign Executor '..startexec_page..'.'..startexec_num+j..' Cue 1 /cmd="'..allcolorexec_cmd[j+1]..'"');
             
-            --Create Macro and label it
-            gma.cmd('Store Macro 1.'..startmacro_num+j);
-            gma.cmd('Label Macro 1.'..startmacro_num+j..' \"All '..colornames[j+1]..'\"')
-            
-            --Create Macrolines for: 
-            --1. Start Executor with Color Data
-            gma.cmd('Store Macro 1.'..startmacro_num+j..'.1');        
-            gma.cmd('Assign Macro 1.'..startmacro_num+j..'.1 /cmd = \"Go Executor '..startexec_page..'.'..startexec_num+j..'\"');
-            
-            --2. Copy On Image to Imageplace
-            gma.cmd('Store Macro 1.'..startmacro_num+j..'.2');
-            gma.cmd('Assign Macro 1.'..startmacro_num+j..'.2 /cmd = \"Copy Image '..startimagestorage_num+(2*j)..' At '..startimage_num+j..' /o\"');
-            
-            --3. Copy Off Image to Imageplace
-            for k = 0, 12 do
-                progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
-            
-                gma.cmd('Store Macro 1.'..startmacro_num+j..'.'..(3+k));
-                if k ~= j then
-                    gma.cmd('Assign Macro 1.'..startmacro_num+j..'.'..(3+k)..' /cmd = \"[$colorgrid_All_'..colornames_prgm[k+1]..' == 1]     Copy Image '..startimagestorage_num+1+(k*2)..'  At '..startimage_num+k..' /o;\"');
-                end
-            end
-            
-            --4. Label Image correctly
-            gma.cmd('Store Macro 1.'..startmacro_num+j..'.16');
-            gma.cmd('Assign Macro 1.'..startmacro_num+j..'.16 /cmd = \"Label Image '..startimage_num+j..' All_'..colornames[j+1]..'\"');
-            
-            --5. Set colorgrid_All Vars to false and for the active Color to true
-            for k = 0, 12 do
-                progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
-                gma.cmd('Store Macro 1.'..startmacro_num+j..'.'..(17+k));
-                if k ~= j then
-                    gma.cmd('Assign Macro 1.'..startmacro_num+j..'.'..(17+k)..' /cmd = \"[$colorgrid_All_'..colornames_prgm[k+1]..' == 1] SetVar $colorgrid_All_'..colornames_prgm[k+1]..'=0;\"');
-                end
-            end
-            gma.cmd('Store Macro 1.'..startmacro_num+j..'.'..(30));
-            gma.cmd('Assign Macro 1.'..startmacro_num+j..'.'..(30)..' /cmd = \"SetVar $colorgrid_All_'..colornames_prgm[j+1]..' = 1;\"');
-            
-            --5. Go Macros for all fixtures for this Color
-            gma.cmd('Store Macro 1.'..startmacro_num+j..'.'..(31));
-            gma.cmd('Assign Macro 1.'..startmacro_num+j..'.'..(31)..' /cmd = \"'..allcolormac_cmd[j+1]..'\"');
-            
-            
-            --Create Images
-            gma.cmd('Copy Image '..startimagestorage_num+(1+(2*j))..' At '..startimage_num+j);
-            gma.cmd('Label Image '..startimage_num+j..' \"All '..colornames[j+1]..'\"');
-                
-            --Assign Macro to LayoutView
-            gma.cmd('ClearAll');
-            gma.cmd('Assign Macro '..startmacro_num+j..' at Layout '..layoutview_num..' /x='..layoutview_pos_startX+(layoutview_pos_spacingX+1)*j..' /y='..layoutview_pos_startY..';');
         end
         
-      gma.gui.progress.stop(callback_progress_All);
+      -- gma.gui.progress.stop(callback_progress_All);
     end
     
-    --Reset Progress
-    progress = 1;
-    callback_progress_Fixture = gma.gui.progress.start("Fixture Row");
-    gma.gui.progress.setrange(callback_progress_Fixture,1,600);
-    gma.gui.progress.set(callback_progress_Fixture,progress);
+    -- Reset Progress
+    -- progress = 1;
+    -- callback_progress_Fixture = gma.gui.progress.start("Fixture Row");
+    -- gma.gui.progress.setrange(callback_progress_Fixture,1,600);
+    -- gma.gui.progress.set(callback_progress_Fixture,progress);
     
     
     --Executor with Color Data for the Fixturegroup
     for j = 0, 12 do
-        progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
+        -- progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
     
         --Call Preset
         gma.cmd('Group '..fixt_group..' At Preset 4.'..globalcolorpresets+j);
@@ -228,82 +147,61 @@ function start()
         allcolorexec_cmd[j+1] = allcolorexec_cmd[j+1]..' + '..startexec_page..'.'..exec_num+j;
         gma.cmd('Assign Executor '..startexec_page..'.'..startexec_num+j..' Cue 1 /cmd="'..allcolorexec_cmd[j+1]..'"');
         
+        -- {'White', 'Red', 'Orange', 'Yellow', 'Fern Green', 'Green', 'Sea Green', 'Cyan', 'Lavender', 'Blue', 'Violet', 'Magenta', 'Pink'}
+        
+        
+        --Set Appearence
+        local color_r = ({  [0] = '100', 
+                            [1] = '100',
+                            [2] = '100',
+                            [3] = '100',
+                            [4] = '50',
+                            [5] = '0',
+                            [6] = '0',
+                            [7] = '0',
+                            [8] = '0',
+                            [9] = '0',
+                            [10] = '50',
+                            [11] = '100',
+                            [12] = '100',
+                        })[i];
+                        
+        local color_g = ({  [0] = '100', 
+                            [1] = '0',
+                            [2] = '0',
+                            [3] = '0',
+                            [4] = '50',
+                            [5] = '100',
+                            [6] = '100',
+                            [7] = '100',
+                            [8] = '100',
+                            [9] = '100',
+                            [10] = '50',
+                            [11] = '0',
+                            [12] = '0',
+                        })[i];
+                        
+        local color_b = ({  [0] = '100', 
+                            [1] = '0',
+                            [2] = '0',
+                            [3] = '0',
+                            [4] = '0',
+                            [5] = '0',
+                            [6] = '50',
+                            [7] = '100',
+                            [8] = '100',
+                            [9] = '100',
+                            [10] = '100',
+                            [11] = '100',
+                            [12] = '50',
+                        })[i];
+        gma.cmd('Appearance '..startexec_page..'.'..exec_num+j..' /red='..color_r..' /green='..color_g..' /blue='..color_b..';');                
+        
+        
         gma.cmd('ClearAll');
     end
     
-    
-    --Macro part for the Fixturegroup
-    for j = 0, 12 do
-        progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
-    
-        --Create Macro and label it
-        gma.cmd('Store Macro 1.'..mac_num+j);
-        gma.cmd('Label Macro 1.'..mac_num+j..' \"'..fixt_group_name..' '..colornames[j+1]..'\"');
-        
-        --Create Macrolines for: 
-        --1. Start Executor with Color Data
-        gma.cmd('Store Macro 1.'..mac_num+j..'.1');
-        gma.cmd('Assign Macro 1.'..mac_num+j..'.1 /cmd = \"Go Executor '..startexec_page..'.'..exec_num+j..'\"');
-        
-        --2. Copy On Image to Imageplace
-        gma.cmd('Store Macro 1.'..mac_num+j..'.2');
-        gma.cmd('Assign Macro 1.'..mac_num+j..'.2 /cmd = \"Copy Image '..startimagestorage_num+(2*j)..' At '..image_num+j..'/o\"');
-        
-        --3. Copy Off Image to Imageplace
-        for k = 0, 12 do
-            progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
-            
-            gma.cmd('Store Macro 1.'..mac_num+j..'.'..(3+k));
-            if k ~= j then
-                gma.cmd('Assign Macro 1.'..mac_num+j..'.'..(3+k)..' /cmd = \"[$colorgrid_'..fixt_group_name..'_'..colornames_prgm[k+1]..' == 1]     Copy Image '..startimagestorage_num+1+(k*2)..'  At '..image_num+k..' /o;\"');
-            end
-        end
-        --4.Copy Off Image for the All Color Execs
-        
-        for k = 0, 12 do
-            progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
-            
-            gma.cmd('Store Macro 1.'..mac_num+j..'.'..(16+k));
-            if k ~= j then
-                gma.cmd('Assign Macro 1.'..mac_num+j..'.'..(16+k)..' /cmd = \"[$colorgrid_All_'..colornames_prgm[k+1]..' == 1]     Copy Image '..startimagestorage_num+1+(k*2)..'  At '..startimage_num+k..' /o;\"');
-            end
-        end
-        --5.Set colorgrid_Fixt Vars to false and for the active Color to true
-        for k = 0, 12 do
-            progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
-            gma.cmd('Store Macro 1.'..mac_num+j..'.'..(29+k));
-            if k ~= j then
-                gma.cmd('Assign Macro 1.'..mac_num+j..'.'..(29+k)..' /cmd = \"[$colorgrid_'..fixt_group_name..'_'..colornames_prgm[k+1]..' == 1] SetVar $colorgrid_'..fixt_group_name..'_'..colornames_prgm[k+1]..'=0;\"');
-            end
-        end
-        gma.cmd('Store Macro 1.'..mac_num+j..'.'..(30));
-        gma.cmd('Assign Macro 1.'..mac_num+j..'.'..(30)..' /cmd = \"SetVar $colorgrid_'..fixt_group_name..'_'..colornames_prgm[j+1]..' = 1;\"');
-        
-        
-        --Add this Macro to allcolor cmd and reassign cmd
-        allcolormac_cmd[j+1] = allcolormac_cmd[j+1]..' + '..mac_num+j;
-        gma.echo(allcolormac_cmd[j+1]);
-        gma.cmd('Assign Macro 1.'..startmacro_num+j..'.'..(31)..' /cmd = \"'..allcolormac_cmd[j+1]..'\"');
-        
-        --Assign Macro
-        gma.cmd('Assign Macro '..mac_num+j..' at Layout '..layoutview_num..' /x='..layoutview_pos_startX+(layoutview_pos_spacingX+1)*j..' /y='..layoutview_pos_startY+(layoutview_pos_spacingY+1)*(row_count+1)..';');
-    end
-
-    --Image Part
-    for j = 0, 12 do
-        progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
-        
-        gma.cmd('Copy Image '..startimagestorage_num+(1+(2*j))..' At '..image_num+j);
-        gma.cmd('Label Image '..image_num+j..' \"'..fixt_group_name..' '..colornames[j+1]..'\"');
-    end
-    
-    
-    gma.gui.progress.stop(callback_progress_Fixture);
-    
     setAllVarsFromShowfile();
-    gma.cmd('ClearAll');
-    
-    gma.gui.msgbox('Colorpicker','Finished!')
     
     ::EOF::
 end
