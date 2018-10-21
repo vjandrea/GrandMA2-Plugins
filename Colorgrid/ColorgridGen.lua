@@ -85,21 +85,14 @@ function start()
     --If there are no Executors for All Fixtures yet, then create ones
     if gma.show.getobj.handle("Sequence 1000") == nil then
     
-        -- callback_progress_All = gma.gui.progress.start("All Row");
-        -- gma.gui.progress.setrange(callback_progress_All,1,400);
-        -- gma.gui.progress.set(callback_progress_All,progress);
-        
-        
         --Create Vars
         for j = 0, 12 do
             gma.cmd('SetVar $colorgrid_All_'..colornames_prgm[j+1]..' = 0');
             
-            -- progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
         end
         
         --Create Sequences and Execs for All Colors
         for j = 0, 12 do
-            -- progress = progress+1; gma.gui.progress.set(callback_progress_All,progress);
             
             -- Store Seq and assign it to Executor
             gma.cmd('ClearAll'); 
@@ -107,27 +100,13 @@ function start()
             gma.cmd('Assign Sequence '..startseq_num+j..' At Executor /o '..startexec_page..'.'..startexec_num+j);
             gma.cmd('Label Executor '..startexec_page..'.'..startexec_num+j..' /name "All '..colornames[j+1]..'"');
             
-            --Build command: Exclude the current exec from the command allcolorexec_offcmd
-            allcolorexec_cmd[j+1] = allcolorexec_offcmd..'-'..startexec_page..'.'..startexec_num+j..'; '..allcolorexec_cmd[j+1];
-            --Assign command to Cue
-            gma.cmd('Assign Executor '..startexec_page..'.'..startexec_num+j..' Cue 1 /cmd="'..allcolorexec_cmd[j+1]..'"');
             
         end
-        
-      -- gma.gui.progress.stop(callback_progress_All);
     end
-    
-    -- Reset Progress
-    -- progress = 1;
-    -- callback_progress_Fixture = gma.gui.progress.start("Fixture Row");
-    -- gma.gui.progress.setrange(callback_progress_Fixture,1,600);
-    -- gma.gui.progress.set(callback_progress_Fixture,progress);
-    
     
     --Executor with Color Data for the Fixturegroup
     for j = 0, 12 do
-        -- progress = progress+1;gma.gui.progress.set(callback_progress_Fixture,progress);
-    
+        
         --Call Preset
         gma.cmd('Group '..fixt_group..' At Preset 4.'..globalcolorpresets+j);
         
@@ -141,61 +120,61 @@ function start()
         gma.cmd('Label Executor '..startexec_page..'.'..exec_num+j..' /name "'..fixt_group_name..' '..colornames[j+1]..'"');
         
         --Assign Command to Off all All Color Executors except the All Color Executor for this color
-        gma.cmd('Assign Executor '..startexec_page..'.'..exec_num+j..' Cue 1 /cmd="'..allcolorexec_offcmd..'-'..startexec_page..'.'..startexec_num+j..'"');
+        local s = startexec_page..'.'..exec_num..' Thru '..startexec_page..'.'..(exec_num+12);
+        gma.cmd('Assign Executor '..startexec_page..'.'..exec_num+j..' Cue 1 /cmd="'..allcolorexec_offcmd..'-'..startexec_page..'.'..startexec_num+j..'; Off Exec '..s..' - '..startexec_page..'.'..exec_num+j..';"');
 
         --Add this Executor to the command of the All Color Executor for this color to this exec
         allcolorexec_cmd[j+1] = allcolorexec_cmd[j+1]..' + '..startexec_page..'.'..exec_num+j;
         gma.cmd('Assign Executor '..startexec_page..'.'..startexec_num+j..' Cue 1 /cmd="'..allcolorexec_cmd[j+1]..'"');
         
-        -- {'White', 'Red', 'Orange', 'Yellow', 'Fern Green', 'Green', 'Sea Green', 'Cyan', 'Lavender', 'Blue', 'Violet', 'Magenta', 'Pink'}
-        
         
         --Set Appearence
-        local color_r = ({  [0] = '100', 
-                            [1] = '100',
-                            [2] = '100',
-                            [3] = '100',
-                            [4] = '50',
-                            [5] = '0',
-                            [6] = '0',
-                            [7] = '0',
-                            [8] = '0',
-                            [9] = '0',
-                            [10] = '50',
-                            [11] = '100',
-                            [12] = '100',
-                        })[i];
+        local color_r = {'100', 
+                         '100',
+                         '100',
+                         '100',
+                         '50',
+                         '0',
+                         '0',
+                         '0',
+                         '0',
+                         '0',
+                         '50',
+                         '100',
+                         '100',
+                        };
                         
-        local color_g = ({  [0] = '100', 
-                            [1] = '0',
-                            [2] = '0',
-                            [3] = '0',
-                            [4] = '50',
-                            [5] = '100',
-                            [6] = '100',
-                            [7] = '100',
-                            [8] = '100',
-                            [9] = '100',
-                            [10] = '50',
-                            [11] = '0',
-                            [12] = '0',
-                        })[i];
+        local color_g = {'100', 
+                         '0',
+                         '50',
+                         '100',
+                         '100',
+                         '100',
+                         '50',
+                         '0',
+                         '50',
+                         '100',
+                         '50',
+                         '0',
+                         '0',
+                        };
                         
-        local color_b = ({  [0] = '100', 
-                            [1] = '0',
-                            [2] = '0',
-                            [3] = '0',
-                            [4] = '0',
-                            [5] = '0',
-                            [6] = '50',
-                            [7] = '100',
-                            [8] = '100',
-                            [9] = '100',
-                            [10] = '100',
-                            [11] = '100',
-                            [12] = '50',
-                        })[i];
-        gma.cmd('Appearance '..startexec_page..'.'..exec_num+j..' /red='..color_r..' /green='..color_g..' /blue='..color_b..';');                
+        local color_b = {'100', 
+                         '0',
+                         '0',
+                         '0',
+                         '0',
+                         '0',
+                         '50',
+                         '100',
+                         '100',
+                         '100',
+                         '100',
+                         '100',
+                         '50',
+                        };
+        gma.echo(j);
+        gma.cmd('Appearance Exec '..startexec_page..'.'..exec_num+j..' /red='..color_r[j+1]..' /green='..color_g[j+1]..' /blue='..color_b[j+1]..';');                
         
         
         gma.cmd('ClearAll');
