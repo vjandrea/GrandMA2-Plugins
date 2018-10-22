@@ -23,10 +23,15 @@ local colornames_prgm = {'white', 'red', 'orange', 'yellow', 'ferngreen', 'green
 function start()
     getAllVarsFromShowfile();
     
-    gma.cmd('Delete Seq '..startseq_num..' Thru ' ..startseq_num+15+(row_count*15));
-    gma.cmd('Delete Image '..startimage_num..' Thru ' ..startimage_num+15+(row_count*15));
-    gma.cmd('Delete Macro '..startmacro_num..' Thru ' ..startmacro_num+15+(row_count*15));
-    gma.cmd('Delete Preset 4.'..globalcolorpresets..' Thru ' ..globalcolorpresets+15+(row_count*15));
+    local start = gma.gui.confirm('Colorpicker | Row Count:'..row_count, 'Attention! Programmer will be cleared! Do you want to continue?');
+    if (not start) then
+        goto EOF
+    end
+    
+    gma.cmd('Delete Seq '..startseq_num..' Thru ' ..startseq_num+15+((row_count+1)*15));
+    gma.cmd('Delete Image '..startimage_num..' Thru ' ..startimage_num+15+((row_count+1)*15));
+    gma.cmd('Delete Macro '..startmacro_num..' Thru ' ..startmacro_num+15+((row_count+1)*15));
+    gma.cmd('Delete Preset 4.'..globalcolorpresets..' Thru ' ..globalcolorpresets+15+((row_count+1)*15));
     
     --Set All Color Executor Commands in Showfile
     for j = 0,12 do
@@ -44,15 +49,17 @@ function start()
             gma.cmd('SetVar $colorgrid_'..name..'_'..colornames_prgm[j+1]..'=;');
         end
     end
-        
-    gma.echo('start');
+    
+    gma.cmd('SetVar $colorgrid_row_count=;');
+    
+    ::EOF::
 end
 
 function getAllVarsFromShowfile()
     --Row count
     if gma.show.getvar('colorgrid_row_count') ~= nil then
-        gma.echo('Found colorgrid_row_count');
         row_count = tonumber(gma.show.getvar('colorgrid_row_count'));
+        gma.echo('Found colorgrid_row_count: '..row_count);
     end
 end
 

@@ -26,9 +26,8 @@ function getAllVarsFromShowfile()
     --Row count
     gma.echo('Search colorgrid_row_count');
     if gma.show.getvar('colorgrid_row_count') ~= nil then
-        gma.echo('Found colorgrid_row_count');
-        local temp = gma.show.getvar('colorgrid_row_count');
-        row_count = tonumber(temp);
+        row_count = tonumber(gma.show.getvar('colorgrid_row_count'));
+        gma.echo('Found colorgrid_row_count: '..row_count);
     end
     
     --All Color Executors Commands
